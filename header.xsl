@@ -57,7 +57,6 @@
       <h2 class="SkipLink">Navigation links for login, help, feedback, etc.</h2>
         <ul>
           <xsl:call-template name="loginlink"/>
-          <xsl:call-template name="aboutlink"/>
           <xsl:call-template name="helplink"/>
           <xsl:call-template name="feedbacklink"/>
         </ul>
@@ -117,8 +116,13 @@
      <div id="CBNav">
        <h2 class="SkipLink">Navigation links for search and collections</h2>
        <ul>
-         <li><a href="http://catalog.hathitrust.org"><span title="Catalog Search">Search</span></a></li>
          <li>
+           <a href="http://hathitrust.org"><span title="Catalog Search">Home</span></a>
+         </li>
+         <li>
+           <a href="http://hathitrust.org/about"><span title="About HathiTrust">About</span></a>
+         </li>
+         <li id="PubCollLink">
            <xsl:element name="a">
              <xsl:attribute name="href">
                <xsl:value-of select="/MBooksTop/Header/PubCollLink"/>
@@ -126,14 +130,16 @@
              <span title="Public Collections">Public Collections</span>
            </xsl:element>
          </li>
-         <li>
+         <li id="PrivCollLink">
            <xsl:element name="a">
              <xsl:attribute name="href">
                <xsl:value-of select="/MBooksTop/Header/PrivCollLink"/>
              </xsl:attribute>
              <span title="My Collections">My Collections</span>
            </xsl:element>
-           
+         </li>
+         
+         <li>
            <!-- XXX Suz make jumpToColl widget is coded for accessibility-->
            <xsl:for-each select="/MBooksTop/Header/JumpToCollWidget">
              <!-- only include widget if there is something to include -->
@@ -210,17 +216,11 @@
      </xsl:choose>
    </li>
  </xsl:template>
- 
- <xsl:template name="aboutlink">
-   <li>
-     <a href="http://www.hathitrust.org" title="About Hathi Trust">About</a>
-   </li>
- </xsl:template>
- 
+  
  <xsl:template name="helplink">
    <li>
      <a>
-       <xsl:attribute name="href">http://www.hathitrust.org/faq</xsl:attribute>
+       <xsl:attribute name="href">http://www.hathitrust.org/help</xsl:attribute>
        <xsl:attribute name="title">Help page and faq</xsl:attribute>
        <xsl:text>Help</xsl:text>
      </a>
