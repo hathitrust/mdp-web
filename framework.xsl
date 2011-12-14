@@ -824,12 +824,13 @@
               <xsl:attribute name="value"><xsl:value-of select="/MBooksTop/MBooksGlobals/CurrentCgi/Param[@name='num']" /></xsl:attribute>
             </xsl:element>
           </xsl:if>
+
           <xsl:element name="input">
             <xsl:attribute name="id">mdpSearchInputBox</xsl:attribute>
             <xsl:attribute name="type">text</xsl:attribute>
             <xsl:attribute name="name">q1</xsl:attribute>
             <xsl:attribute name="maxlength">150</xsl:attribute>
-            <xsl:attribute name="size">20</xsl:attribute>
+            <xsl:attribute name="size">30</xsl:attribute>
             <xsl:if test="$gHasOcr!='YES'">
               <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
@@ -989,7 +990,7 @@
         
         <div class="mdpFbSubtitle">
           <xsl:text>Problem with access rights? </xsl:text>
-          <span>(See also: <a href="http://www.lib.umich.edu/policies/takedown.html"
+          <span>(See also: <a href="http://www.hathitrust.org/take_down_policy"
           target="_blank">take-down policy</a>)</span>
         </div>
         <div id="mdpFlexible_2_Rights">
