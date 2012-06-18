@@ -52,7 +52,42 @@
   <xsl:variable name="gCurrentQ1" select="/MBooksTop/MBooksGlobals/CurrentCgi/Param[@name='q1']"/>
   <xsl:variable name="gContactEmail" select="/MBooksTop/MBooksGlobals/ContactEmail"/>
   <xsl:variable name="gContactText" select="/MBooksTop/MBooksGlobals/ContactText"/>
-  <xsl:variable name="gVolumeTitleFragment" select="concat(' ', /MBooksTop/MBooksGlobals/VolCurrTitleFrag)"/>
+  <xsl:variable name="gVersionLabel" select="/MBooksTop/MBooksGlobals/VersionLabel"/>
+
+  <xsl:variable name="gTombstoneMsg">
+    <p class="leftText">This item is no longer available in HathiTrust due to one of the following reasons:</p>
+    <ul class="bullets">
+      <li>It was removed at the request of the rights holder.</li>
+      <li>It was either wholly unusable or a superior copy is available.</li>
+    </ul>
+    
+    <p class="leftText">
+      <xsl:text>Try a </xsl:text>
+      <xsl:element name="a">
+        <xsl:attribute name="href">
+          <xsl:choose>
+            <xsl:when test="$gSkin='mobile'">
+              <xsl:value-of select="'http://m.hathitrust.org'"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="'http://www.hathitrust.org'"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
+        <xsl:text> new search </xsl:text>
+      </xsl:element>
+      <xsl:text>for your item to see if there are other copies or editions of this work available.</xsl:text>
+    </p>
+  </xsl:variable>
+
+  <xsl:variable name="gVolumeTitleFragment">
+    <xsl:choose>
+      <xsl:when test="/MBooksTop/MBooksGlobals/VolCurrTitleFrag!=' '">
+        <xsl:value-of select="concat(' ', /MBooksTop/MBooksGlobals/VolCurrTitleFrag, '.')"/>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="' '"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:variable name="gFullPdfAccess" select="/MBooksTop/MdpApp/AllowFullPDF"/>
   <xsl:variable name="gFullPdfAccessMessage" select="/MBooksTop/MdpApp/FullPDFAccessMessage"/>
@@ -190,9 +225,9 @@
         <xsl:attribute name="property">cc:attributionName</xsl:attribute>
         <xsl:attribute name="rel">cc:attributionURL</xsl:attribute>
         <xsl:attribute name="href"><xsl:value-of select="$gItemHandle"/></xsl:attribute>
-        <xsl:attribute name="content">
+        <!--xsl:attribute name="content"--> <!-- So it will be seen by CC scraper -->
           <xsl:value-of select="$author"/>
-        </xsl:attribute>
+        <!--/xsl:attribute-->
       </xsl:element>
     </xsl:if>
 
@@ -255,20 +290,15 @@
       <xsl:attribute name="href">
         <xsl:value-of select="$gAccessUseLink"/>
       </xsl:attribute>
-      <!-- <xsl:text>Read access and use policy.</xsl:text> -->
-      <xsl:choose>
-        <xsl:when test="$gItemFormat='BK'">
-          <xsl:element name="span">
-            <xsl:attribute name="href"><xsl:value-of select="$gAccessUseAuxLink"/></xsl:attribute>
-            <xsl:attribute name="rel">license</xsl:attribute>
-            <xsl:value-of select="$access_use_header"/>
-          </xsl:element>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$access_use_header"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="$access_use_header"/>
     </xsl:element>
+
+    <xsl:if test="$gItemFormat='BK' and $gAccessUseAuxLink!=''">
+      <xsl:element name="a">
+        <xsl:attribute name="href"><xsl:value-of select="$gAccessUseAuxLink"/></xsl:attribute>
+        <xsl:attribute name="rel">license</xsl:attribute>
+      </xsl:element>
+    </xsl:if>
 
     <xsl:if test="$gAccessUseIcon != '' or ( $gAccessUseAuxLink != '' and $gAccessUseAuxIcon != '' )">
       <br /><br />
@@ -1047,6 +1077,8 @@
           <xsl:with-param name="visible_title_string" select="$gTruncTitleString"/>
           <xsl:with-param name="hidden_title_string" select="$gFullTitleString"/>
         </xsl:call-template>
+        <!-- set author off from title with a space -->
+        <xsl:value-of select="' '"/>
 
         <!-- not visible -->
         <xsl:call-template name="BuildRDFaWrappedAuthor"/>
@@ -1159,6 +1191,7 @@
         <xsl:if test="$gFinalAccessStatus = 'allow' and $gUsingSearch = 'false'">
         <li>
           <xsl:element name="a">
+            <xsl:attribute name="title">Download this page (PDF)</xsl:attribute>
             <xsl:attribute name="id">pagePdfLink</xsl:attribute>
             <xsl:attribute name="class">tracked</xsl:attribute>
             <xsl:attribute name="data-tracking-category">PT</xsl:attribute>
@@ -1169,46 +1202,65 @@
             <xsl:attribute name="target">
               <xsl:text>pdf</xsl:text>
             </xsl:attribute>
-            <xsl:text>Download PDF - this page</xsl:text>
+            <xsl:text>Download this page (PDF)</xsl:text>
           </xsl:element>
         </li>
         </xsl:if>
         
-        <xsl:if test="$gFullPdfAccessMessage != 'NOT_AVAILABLE'">
+        <xsl:if test="$gFullPdfAccessMessage='' or $gFullPdfAccessMessage='NOT_AFFILIATED' or $gFullPdfAccessMessage='RESTRICTED_SOURCE'">
           <li>
-            <xsl:element name="a">
-              <xsl:attribute name="title">Download full PDF</xsl:attribute>
-              <xsl:attribute name="id">fullPdfLink</xsl:attribute>
-              <xsl:attribute name="class">tracked</xsl:attribute>
-              <xsl:attribute name="data-tracking-category">PT</xsl:attribute>
-              <xsl:attribute name="data-tracking-action">PT Download PDF - whole book</xsl:attribute>
-              <xsl:attribute name="rel"><xsl:value-of select="$gFullPdfAccess" /></xsl:attribute>
-              <xsl:attribute name="href">
-                <xsl:value-of select="$pViewTypeList/ViewTypeFullPdfLink"/>
-              </xsl:attribute>
-              <xsl:text>Download PDF - whole book</xsl:text>
-            </xsl:element>
-            <xsl:if test="$gFullPdfAccessMessage = 'NOT_AFFILIATED'">
-              <p class="pdfPartnerLoginLinkMessage">Partner login required</p>
-            </xsl:if>
-          
+            <xsl:choose>
+              <xsl:when test="$gFullPdfAccessMessage='RESTRICTED_SOURCE'">
+                <xsl:text>Download whole book (PDF)</xsl:text>
+                <br />
+                <i>Not available</i> (<a href="http://www.hathitrust.org/help_digital_library#FullPDF" target="_blank">why not?</a>)
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:element name="a">
+                  <xsl:attribute name="title">Download whole book (PDF)</xsl:attribute>
+                  <xsl:attribute name="id">fullPdfLink</xsl:attribute>
+                  <xsl:attribute name="class">tracked</xsl:attribute>
+                  <xsl:attribute name="data-tracking-category">PT</xsl:attribute>
+                  <xsl:attribute name="data-tracking-action">PT Download PDF - whole book</xsl:attribute>
+                  <xsl:attribute name="rel"><xsl:value-of select="$gFullPdfAccess" /></xsl:attribute>
+                  <xsl:attribute name="href">
+                    <xsl:value-of select="$pViewTypeList/ViewTypeFullPdfLink"/>
+                  </xsl:attribute>
+                  <xsl:text>Download whole book (PDF)</xsl:text>
+                </xsl:element>
+                <xsl:if test="$gFullPdfAccessMessage = 'NOT_AFFILIATED'">
+                  <p class="pdfPartnerLoginLinkMessage">Partner login required</p>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+            
             <xsl:if test="$gFullPdfAccess = 'deny'">
               <div id="noPdfAccess">
-                <p>
+                <p style="text-align: left">
                   <xsl:choose>
                     <xsl:when test="$gLoggedIn = 'NO' and $gFullPdfAccessMessage = 'NOT_AFFILIATED'">
+                      <xsl:text>Partner institution members: </xsl:text>
                       <strong><a href="{$pViewTypeList/ViewTypeFullPdfLink}">Login</a></strong>
-                      <xsl:text> to determine whether you can download this book.</xsl:text>
+                      <xsl:text> to download this book.</xsl:text>
+                      <br />
+                      <br />
+                      <em>If you are not a member of a partner institution, 
+                        <br />
+                        whole book download is not available. 
+                        (<a href="http://www.hathitrust.org/help_digital_library#Download" target="_blank">why not?</a>)</em>
                     </xsl:when>
                     <xsl:when test="$gFullPdfAccessMessage = 'NOT_AFFILIATED'">
                       <xsl:text>Full PDF available only to authenticated users from </xsl:text>
-                      <a href="http://www.hathitrust.org/help_digital_library#LoginNotListed">HathiTrust partner institutions.</a>
+                      <a href="http://www.hathitrust.org/help_digital_library#LoginNotListed" target="_blank">HathiTrust partner institutions.</a>
                     </xsl:when>
                     <xsl:when test="$gFullPdfAccessMessage = 'NOT_PD'">
                       <xsl:text>In-copyright books cannot be downloaded.</xsl:text>
                     </xsl:when>
                     <xsl:when test="$gFullPdfAccessMessage = 'NOT_AVAILABLE'">
                       <xsl:text>This book cannot be downloaded.</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="$gFullPdfAccessMessage = 'RESTRICTED_SOURCE'">
+                      <xsl:comment>Handled above</xsl:comment>
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:text>Sorry.</xsl:text>
@@ -1280,6 +1332,13 @@
         </xsl:if>
 
       </form>
+    </div>
+  </xsl:template>
+
+  <xsl:template name="versionLabel">
+    <div class="versionContainer">
+      <strong>Version: </strong><xsl:value-of select="$gVersionLabel"/>
+      <span id="versionIcon"><img src="//common-web/graphics/harmony/icon_question.png" alt="version label for this item"/></span>
     </div>
   </xsl:template>
 
@@ -1446,21 +1505,55 @@
   </xsl:template>
   
   <xsl:template name="PageTitle">
-    <xsl:param name="prefix" select="'HathiTrust Digital Library'" />
-    <xsl:value-of select="$prefix" />
+    <xsl:param name="detail" select="''" />
+    <xsl:param name="suffix" select="'HathiTrust Digital Library'" />
+    <xsl:param name="dash" select="'-'" />
+    <xsl:param name="title" />
+    <xsl:param name="tail" />
+
+    <xsl:variable name="displayed-title">
+      <xsl:choose>
+        <xsl:when test="normalize-space($title)">
+          <xsl:value-of select="normalize-space($title)" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:variable name="truncated-title">
+            <xsl:call-template name="GetMaybeTruncatedTitle">
+              <xsl:with-param name="titleString" select="$gTitleString"/>
+              <xsl:with-param name="titleFragment" select="$gVolumeTitleFragment"/>
+              <xsl:with-param name="maxLength" select="$gTitleTruncAmt"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:value-of select="normalize-space($truncated-title)" />
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:if test="normalize-space($detail)">
+        <xsl:value-of select="concat(' ', $dash, ' ')" />
+        <xsl:value-of select="$detail" />
+      </xsl:if>
+    </xsl:variable>
+  
+    <xsl:value-of select="$displayed-title" />
     <xsl:choose>
+      <xsl:when test="$gRightsAttribute='8'">
+        <xsl:text> - Item Not Available </xsl:text>
+      </xsl:when>
       <xsl:when test="/MBooksTop/MBooksGlobals/FinalAccessStatus='allow'">
-        <xsl:text> - </xsl:text>
+        <xsl:text> - Full View </xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:text> -- </xsl:text>
+        <xsl:text> - Limited View </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:call-template name="GetMaybeTruncatedTitle">
-      <xsl:with-param name="titleString" select="$gTitleString"/>
-      <xsl:with-param name="titleFragment" select="$gVolumeTitleFragment"/>
-      <xsl:with-param name="maxLength" select="$gTitleTruncAmt"/>
-    </xsl:call-template>
+
+    <xsl:text> | </xsl:text> 
+    <xsl:value-of select="$suffix" />
+    <xsl:if test="normalize-space($tail)">
+      <xsl:text> (</xsl:text>
+      <xsl:value-of select="$tail" />
+      <xsl:text>)</xsl:text>
+    </xsl:if>
+
   </xsl:template>
   
   <!-- need to move the anchor elsewhere -->
