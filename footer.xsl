@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml"
   version="1.0">
-
-  <xsl:key name="institution-names" match="/MBooksTop/MBooksGlobals/Institutions/Inst" use="@sdrinst"/> 
 
   <xsl:variable name="gEnableGoogleAnalytics" select="'true'"/>
   <xsl:variable name="gGoogleOnclickTracking" select="'true'"/>
 
   <xsl:template name="footer">
     <xsl:param name="gUsingBookReader" select="'false'" />
-    <div id="mbFooter">
+    <div id="mbFooter" role="contentinfo">
       <xsl:if test="$gUsingBookReader = 'true'">
         <xsl:attribute name="class"><xsl:text>footerFixed</xsl:text></xsl:attribute>
       </xsl:if>
-      <h2 class="SkipLink">More Page Information</h2>
+      <h2 class="offscreen">Footer</h2>
         
       <div id="FooterCont">
         <!--All pages use Footer-->
@@ -42,11 +41,11 @@
  </xsl:template>
 
  <xsl:template name="footerBrandingLinks">
-   <xsl:variable name="sdrinst" select="/MBooksTop/MBooksGlobals/EnvSDRINST"/>
+   <xsl:variable name="inst" select="/MBooksTop/MBooksGlobals/InstitutionName"/>
    <div class="footerBrandingLinks">
      <xsl:choose>
-       <xsl:when test="$sdrinst!=''">
-         <xsl:value-of select="key('institution-names', $sdrinst)"/>
+       <xsl:when test="$inst!=''">
+         <xsl:value-of select="$inst"/>
          <br />
          <em>Member, HathiTrust</em>
        </xsl:when>
@@ -117,9 +116,34 @@
        var pageTracker = _gat._getTracker("</xsl:text>
        <xsl:value-of select="$tracker_id"/>
        <xsl:text disable-output-escaping="yes">");
+       // turn semicolons into ampersands for analytics reporting
        pageTracker._setDomainName(".hathitrust.org");
-       pageTracker._trackPageview();
-       } catch(err) {}&lt;/script&gt;
+       var href = (location.pathname + location.search).replace(/;/g, '&amp;');
+       pageTracker._trackPageview(href);
+
+       } catch(err) { }
+       try {
+       // track hierarchy
+       if ( location.pathname.indexOf("XXX/cgi/pt") > -1 ) {
+         var nextTracker = _gat._getTracker('UA-39581946-1');
+         nextTracker._setAllowHash(false);
+         nextTracker._setDomainName(".hathitrust.org");
+         href = [location.pathname];
+         var url = $.url();
+         href.push("id=" + encodeURIComponent(url.param('id')));
+         if ( location.pathname == '/cgi/pt' ) {
+           href.push("view=" + url.param('view'));
+           if ( url.param('seq') ) {
+              href.push("seq=" + url.param('seq'));
+           }
+         } else {
+           href.push("start=" + (url.param('start') ? url.param('start') : "1"));
+         }
+         href = href.join("/");
+         nextTracker._trackPageview(href);
+       }
+       } catch(err) { console.log(err); }
+       &lt;/script&gt;
      </xsl:text>
    </xsl:if>
  </xsl:template>

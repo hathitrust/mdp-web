@@ -7,6 +7,99 @@ images are under web/common-web/graphics/ Use ./graphics/foo.gif so make_concat 
 Tom temporary css styles to be put in single css or integrated.  Ask Suz
 ***/
 
+
+
+/** Copied from mb.css **/
+h2.arrow {
+  display: inline;
+  background: #EF7A06;
+  padding-left: 8px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  position: relative;
+  margin-right: 16px;
+  color: white;
+  font-size: 150%;
+  font-weight: normal;
+
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-bottom-left-radius: 8px;
+  -moz-border-radius-topleft: 8px;
+  -moz-border-radius-bottomleft: 8px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+h2.arrow label:after {
+  content: "";
+  position: absolute;
+  /* Pushed down half way, will get pulled back up half height of triangle
+     ensures centering if font-size or line-height changes */
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+
+h2.arrow label:after {
+  right: -12px;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 12px solid #EF7A06;
+  margin-top: -6px;
+}
+
+h3.arrow {
+  display: inline;
+  background: #EF7A06;
+  padding-left: 8px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  position: relative;
+  margin-right: 16px;
+  color: white;
+  font-size: 150%;
+
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-bottom-left-radius: 8px;
+  -moz-border-radius-topleft: 8px;
+  -moz-border-radius-bottomleft: 8px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+h3.arrow label {
+                 background-image:url("./graphics/harmony/icon_books.png");
+                 background-position:0 50%;
+                 background-repeat:no-repeat;
+                 padding-left:24px;
+}
+
+h3.arrow label:after {
+  content: "";
+  position: absolute;
+  /* Pushed down half way, will get pulled back up half height of triangle
+     ensures centering if font-size or line-height changes */
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+
+h3.arrow label:after {
+  right: -12px;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 12px solid #EF7A06;
+  margin-top: -6px;
+}
+
+/** end Copied from mb.css **/
+
+
+
+
+
 /** copied from HT Catalog **/
 ol, ul {
          list-style:none outside none;
@@ -352,13 +445,13 @@ a.inlineLink:hover, a.inlineLink:focus, a.inlineLink:active,
 }
 
 /* use to hide code from display but NOT screenreaders */
-.SkipLink, .SearchLabel {
-  position:absolute;
-  left:0px;
-  top:-1000px;
-  width:1px;
-  height:1px;
-  overflow:hidden;
+.SkipLink, .SearchLabel, .offscreen {
+  position: absolute;
+  left:     -10000px;
+  top:      auto;
+  width:    1px;
+  height:   1px;
+  overflow: hidden;
 }
 
 /* use to hide code from display AND screenreaders */
@@ -398,6 +491,8 @@ td.ItemData ul li {
 
 /* Used on list_items & search results to show which collection you're currently viewing */
 .MBooksCol {
+  font-size: 1.1em;
+  font-weight: normal;
   position: relative;
   float: left;
 	top: 3px;
@@ -483,13 +578,50 @@ a .colName {
 }
 
 /* Style for special access message in pageviewer.xsl */
-#accessBanner {
+.accessBanner {
   background-color: #fce9a8;
   color: #000000;
   text-align: center;
   padding: 6px 0px;
   font-size: 1.2em;
   line-height: 1.2em;
+}
+
+/* Boxy-related */
+/* Style for special access message close button in pageviewer.xsl */
+.accessBannerClose {
+  background-color: #faeec7;
+  font-weight: bold;
+  color: #C4630F;
+  border-style: solid;
+  border-width: 1px;
+  padding: 0px 3px 0px 3px;
+}
+.accessBannerCloseText {
+  color: #C4630F;
+}
+
+/* over-ridden to 300px in mobilept.css to fit device */
+.accessBannerText {
+  width: 400px;
+}
+
+.accessBannerClose:hover {
+  background-color: #f9f5e6;
+  text-decoration: none
+}
+
+/* Boxy pop-up custom CSS */
+.boxy-wrapper .title-bar h2, 
+.boxy-wrapper .title-bar .close {
+  font-size: 1.25em;
+}
+
+.boxy-wrapper .title-bar{
+  text-align: left;
+}
+.boxy-wrapper .title-bar a {
+ text-decoration: none
 }
 
 /*========== Header ==========*/
@@ -510,24 +642,55 @@ a .colName {
 .branding {
   float: left;
   position: relative;
+  height: 55px;
+  left: 0;
+  /*background: red;*/
+  width: 50%;
 }
 
 .brandingLogo {
   height: 51px;
-  float: left;
   margin-top: 4px;
+}
+
+#brandingLabel {
+  background-image: url(./graphics/HathiTrust.gif);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  display: block;
+  float: left;
+  width: 145px;
+  height: 47px;
+  position: relative;
+  top: 0;
+  left: 0;
+  text-indent: -1000px;
+  clip: rect(0, 0, 0, 0);
+  /* the following for IE */
+  text-transform: capitalize;
+  zoom: 1;
+  *display: inline;
+  _height: 47px;
+  _width: 145px;
 }
 
 .brandingLogo span {
   position: relative;
-  top: -15px;
-  left: 10px;
   color: #6a6b6e;
   font-size: 1.7em;
+  display: block;
+  float: left;
+  height: 47px;
+  line-height: 1.9em;
+  left: 10px;
 }
 
 .brandingLogo a {
   text-decoration: none;
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
 }
 
 /* Fixme:suzchap don't need now?
@@ -597,7 +760,7 @@ a .colName {
 
 #CBNavContainer {
   height: 35px;
-  background: url(./graphics/grayGradient.gif) repeat-x SCROLL 0 0 #EEEEEE;
+  background: #666 url(./graphics/grayGradient.gif) repeat-x scroll 0 0;
   border-bottom: 3px solid #E2E2E2;
   border-top: 1px solid #C9C7B8;
   height: 30px;
@@ -731,13 +894,13 @@ body#PrivCollPage li#PrivCollLink a {
   margin: 14px 0 30px 20px;
 }
 
-.mainsearch h2 {
+/*.mainsearch h2 {
 	padding: 0;
 	margin: 0;
 	display:inline;
 	font-size: 1em;
 	font-weight: normal;
-}
+}*/
 
 .SearchAndRefine {
   clear: both;
@@ -1198,6 +1361,7 @@ li.viewall {
   font-weight: bold;
 	font-size: 1.1em;
 	background-color: #eeeeee;
+  margin-bottom: 8px;
 }
 
 .editOwned .colNameLabel, .editOwned .colDescLabel{ 
@@ -1262,9 +1426,20 @@ li.viewall {
   padding-right: 30px;
 }
 
+.PageInfo { 
+  margin: 0 1em .5em 0em;
+  overflow: hidden;
+}
+
 #PageInfo { 
   margin: 0 1em .5em 0em;
   overflow: hidden;
+}
+
+
+.resultsPerPage {
+  position: relative;
+  float: left;
 }
 
 #resultsPerPage {
@@ -1272,15 +1447,38 @@ li.viewall {
   float: left;
 }
 
-#pagingNav {
+
+.pagingNav {
 	margin-left: 10px;
 }
+
+.PageWidget { 
+  list-style-type: none;
+  margin: 0 0 0 2em;
+  padding: 0;
+} 
 
 #PageWidget { 
   list-style-type: none;
   margin: 0 0 0 2em;
   padding: 0;
 } 
+
+.PageWidget li {
+/** Suz says change this to match ht catalog
+  border: 1px solid #CCC;
+  float: left;
+  line-height: 1.1em;
+  margin: 0 0 0 0.3em;
+  padding: 0 .5em 0 .5em;
+**/
+  float: left;
+  line-height: 1.1em;
+  margin: 0 0 0 0.3em;
+  padding:0.2em 0.3em;
+                 
+}
+
 
 #PageWidget li {
 /** Suz says change this to match ht catalog
@@ -1296,6 +1494,7 @@ li.viewall {
   padding:0.2em 0.3em;
                  
 }
+
 
 .greyedOut { 
   color: gray;
@@ -1374,6 +1573,16 @@ td.ItemData {
   vertical-align:top;
   width:70%;
 } 
+
+/** accessibility to make h4 title normal tbw**/
+h4.iTitle {
+            font-weight:normal;     
+            display:inline;
+            
+
+}
+
+
 
 .ItemTitle {
 /**suz change**/
@@ -1565,7 +1774,7 @@ img.SearchArrow {
     }
     
     #SubNavHeader {
-      z-index: none !important;
+      z-index: auto !important;
     }
 /*end attempted fix*/
 

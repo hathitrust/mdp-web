@@ -491,19 +491,21 @@ p.centertext {
   line-height:normal;
 }
 
-p.leftText {
+.leftText {
   font-size:1.3em;
   line-height:normal;
+}
+
+.leftText ul {
+  padding: 0;
+  margin-top: 0.3em;
+  margin-bottom: 0.2em;
 }
 
 .mdpSearchSummary p.centertext {
   font-size:1.1em;
 }
 
-img.imgFloat {
-  position:relative;
-  float:right;
-}
 
 #mdpTextEmpty
 {
@@ -552,27 +554,102 @@ img.imgFloat {
   text-align: center;
 }
 
+/*             Restricted access pages           */
+
+
 #mdpTextDeny {
-  font-weight: normal;
-  font-size: 1.1em;
-  margin: 10px 0 4px 0;
-  padding: 0.75em 1em 0.5em 1em; /*3em 2em 2em 4em;*/
-  border: 1px solid #999;
-  color: #333;
-  background-color: #FFF;
+  *zoom: 1;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1em;
   text-align: left;
-  /*height: 38em;*/
-  /*float: left;*/
-  /*position: relative; top: 10px; left:10px;*/
+  font-weight: normal;
+  font-size: 1.3em;  
+  border: 1px solid #999;
+  line-height:normal;
 }
 
-#mdpTextDeny div {
-  margin-top: 50px;
+#mdpTextDeny:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
-#mdpTextDeny ul li {
-  padding-bottom: 8px;
+#mdpTextDeny * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
+
+#mdpTextDeny header, #mdpTextDeny footer {
+  clear: both;
+}
+
+#mdpTextDeny .no_access_text {
+  clear: both;
+}
+
+#mdpTextDeny .special_text {
+  background: #eee;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+#mdpTextDeny .no_access_search {
+  width: 66.10169%;
+  float: left;
+  margin-right: 1.69492%;
+  display: inline;
+  border-right: 2px solid #cccccc;
+}
+
+#mdpTextDeny .no_access_options {
+  width: 32.20339%;
+  float: right;
+  margin-right: 0;
+  #margin-left: -1em;
+  display: inline;
+}
+
+#mdpTextDeny form {
+  display: block;
+  margin-bottom: 1em;
+}
+
+#mdpTextDeny label#in_use {
+  display: block;
+  margin-bottom: -0.6em;
+}
+
+#mdpTextDeny label#in_copyright {
+  font-weight: bold;
+  display: block;
+}
+
+#mdpTextDeny .no_access_search_help_eg {
+  float: right;
+  padding: 4px;
+  margin: 0 8px 0 30px;
+}
+
+#mdpTextDeny .searchForm {
+  padding-left: 0;
+}
+
+#mdpTextDeny p {
+  padding-bottom: 0.3em;
+}
+
+#mdpTextDeny ul.bullets li {
+  font-size: 100%;
+  font-style: italic;
+  margin: 0;
+}
+
+#mdpTextDeny ul {
+  margin-top: 0!important;
+}
+
 
 /*          Bottom Navigation            */
 
@@ -810,4 +887,23 @@ img.imgFloat {
 select.mdpColSelectMenu 
 {
     width: 14em;
+}
+
+.solr_highlight_1 {
+  background: #ffff00;
+}
+.solr_highlight_2 {
+  background: #00ff00;
+}
+.solr_highlight_3 {
+  background: #ff9900;
+}
+.solr_highlight_4 {
+  background: #00ffcc;
+}
+.solr_highlight_5 {
+  background: #00cccc;
+}
+.solr_highlight_6 {
+  background: #0099cc;
 }

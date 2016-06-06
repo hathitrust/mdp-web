@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                version="1.0">
+<xsl:stylesheet 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="1.0">
 
   <xsl:template name="load_js_and_css">
     <xsl:call-template name="load_js"/>
@@ -8,7 +10,7 @@
   </xsl:template>
 
   <xsl:template name="load_js">
-    <xsl:call-template name="load_base_js"/>
+    <!-- <xsl:call-template name="load_base_js"/> -->
     <xsl:call-template name="load_coll_js"/>
     <xsl:call-template name="load_skin_js"/>
   </xsl:template>

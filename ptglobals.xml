@@ -1,6 +1,7 @@
 <DebugMessages><?DEBUG_MESSAGES?></DebugMessages>
 <RightsAttribute><?RIGHTS_ATTRIBUTE?></RightsAttribute>
 <SourceAttribute><?SOURCE_ATTRIBUTE?></SourceAttribute>
+<ContentProvider><?CONTENT_PROVIDER?></ContentProvider>
 <FinalAccessStatus><?FINAL_ACCESS_STATUS?></FinalAccessStatus>
 <LoggedIn><?LOGGED_IN?></LoggedIn>
 <HathiTrustAffiliate><?HATHITRUST_AFFILIATE?></HathiTrustAffiliate>
@@ -19,8 +20,9 @@
 <ContactEmail><?CONTACT_EMAIL?></ContactEmail>
 <ContactText><?CONTACT_TEXT?></ContactText>
 <VersionLabel><?VERSION_LABEL?></VersionLabel>
-<VolumeData><?VOLUME_DATA?></VolumeData>
-<VolCurrTitleFrag><?VOLUME_CURRENT_TITLE?></VolCurrTitleFrag>
+<VolumeTitle><?VOLUME_TITLE?></VolumeTitle>
+<VolCurrTitleFrag><?VOLUME_CURRENT_TITLE_FRAGMENT?></VolCurrTitleFrag>
+<ItemFormat><?ITEM_FORMAT?></ItemFormat>
 <MetadataFailure><?METADATA_FAILURE?></MetadataFailure>
 <SSDSession><?SSD_SESSION?></SSDSession>
 <Skin><?MY_SKIN?></Skin>
@@ -29,4 +31,10 @@
 <HasOcr><?HAS_OCR?></HasOcr>
 <AccessUse><?ACCESS_USE?></AccessUse>
 <HtId><?HT_ID?></HtId>
-<?CHUNK filename="institutions.xml"?>
+<Holdings><?ACCESS_HOLDINGS?></Holdings>
+<InLibrary><?IN_LIBRARY?></InLibrary>
+<InstitutionName><?INSTITUTION_NAME?></InstitutionName>
+<SuppressAccessBanner><?SUPPRESS_ACCESS_BANNER?></SuppressAccessBanner>
+<Surveys><?PT_SURVEY?></Surveys>
+<Collections><?ITEM_IN_COLLECTIONS?></Collections>
+
