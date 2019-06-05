@@ -258,8 +258,8 @@
 
         <xsl:when test="$AllItemsCount = $FullTextCount">
           <!-- only full text -->
-          <ul class="nav nav-tabs">
-            <li class="viewall active">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="viewall active" role="tab">
               <span>All Items (<xsl:value-of select="$AllItemsCount" />)</span>
             </li>
           </ul>
@@ -267,8 +267,8 @@
 
         <xsl:when test ="$Limit = 'YES'">
           <!-- we are currently showing the result of narrow to full text so we want a URL to all -->
-          <ul class="nav nav-tabs">
-            <li class="viewall">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="viewall" role="tab">
               <xsl:element name="a">
                 <xsl:attribute name="href">
                   <xsl:value-of select="/MBooksTop/LimitToFullText/AllHref"/>
@@ -278,7 +278,7 @@
                 <xsl:text>)</xsl:text>
               </xsl:element>
             </li>
-            <li class="fulltext active">
+            <li class="fulltext active" role="tab">
               <span>
                 <xsl:text>Only Full view (</xsl:text>
                 <xsl:value-of select="$FullTextCount"/>
@@ -291,15 +291,15 @@
         <xsl:otherwise>
           <!-- we are currently showing all so we want to show a url for  narrow to full text  -->
 
-          <ul class="nav nav-tabs">
-            <li class="viewall active">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="viewall active" role="tab">
               <span>
                 <xsl:text>All Items (</xsl:text>
                 <xsl:value-of select="$AllItemsCount"/>
                 <xsl:text>)</xsl:text>
               </span>
             </li>
-            <li class="fulltext">
+            <li class="fulltext" role="tab">
               <xsl:element name="a">
                 <xsl:attribute name="class">fulltext</xsl:attribute>
                 <xsl:attribute name="title">full view</xsl:attribute>
@@ -391,10 +391,12 @@
             <xsl:value-of select="$num_deleted"/><xsl:value-of select="$num_deleted_verb"/><xsl:text> deleted from the repository. </xsl:text>
           </xsl:if>
 
+          
           <xsl:if test="$num_queued > 0">
             <xsl:value-of select="$num_queued"/><xsl:value-of select="$num_queued_verb"/>
-            <xsl:text> queued to be indexed, usually within 48 hours.</xsl:text>
-          </xsl:if>
+            <xsl:text> queued to be indexed, usually within 1-5 days.</xsl:text>
+          </xsl:if> 
+
         </xsl:element>
       </xsl:element>
     </xsl:if>
@@ -418,8 +420,7 @@
   <xsl:template name="OperationResults">
 
     <xsl:variable name="already_count">
-      <xsl:value-of select="OperationResults/AlreadyInColl2Count"/>
-    </xsl:variable>
+      <xsl:value-of select="OperationResults/AlreadyInColl2Count"/>    </xsl:variable>
 
     <xsl:variable name="added_count">
       <xsl:value-of select="OperationResults/IdsAdded"/>
@@ -613,6 +614,9 @@
 
   <xsl:template name="BuildItemSelectActions">
     <div class="SelectedItemActions">
+      <xsl:if test="/MBooksTop/EditCollectionWidget/OwnedByUser='yes'">
+        <xsl:attribute name="style">width: 100%</xsl:attribute>
+      </xsl:if>
       <xsl:call-template name="BuildCollectionSelect"/>
 
       <input type="hidden" name="a" id="a"/>
@@ -622,12 +626,16 @@
       <!-- if they don't own the collection they shouldn't be able to delete (or move) items -->
       <xsl:choose>
         <xsl:when test="/MBooksTop/EditCollectionWidget/OwnedByUser='yes' ">
-          <button class="btn btn-small" id="movit" value="movit">Move Selected</button>
-          <button class="btn btn-small" id="delit" value="delit">Remove Selected</button>
+          <xsl:call-template name="BuildItemSelectedOwnerActions"/>
         </xsl:when>
         <xsl:otherwise></xsl:otherwise>
       </xsl:choose>
     </div>
+  </xsl:template>
+
+  <xsl:template name="BuildItemSelectedOwnerActions">
+    <button class="btn btn-small" id="movit" value="movit">Move Selected</button>
+    <button class="btn btn-small" id="delit" value="delit">Remove Selected</button>
   </xsl:template>
 
 
@@ -638,14 +646,15 @@
       <li>
         <xsl:choose>
           <xsl:when test="/MBooksTop/Paging/PrevPage='None'">
-            <span class="greyedOut">Previous</span>
+            <!-- <span class="greyedOut">Previous</span> -->
           </xsl:when>
           <xsl:otherwise>
             <xsl:element name ="a">
               <xsl:attribute name="href">
                 <xsl:value-of select="/MBooksTop/Paging/PrevPage/Href"/>
               </xsl:attribute>
-              Previous Page
+              <i class="icomoon icomoon-arrow-left" aria-hidden="true"></i>
+              <xsl:text> Previous</xsl:text>
             </xsl:element>
           </xsl:otherwise>
         </xsl:choose>
@@ -663,14 +672,15 @@
       <li>
         <xsl:choose>
           <xsl:when test="/MBooksTop/Paging/NextPage='None'">
-            <span class="greyedOut">Next</span>
+            <!-- <span class="greyedOut">Next</span> -->
           </xsl:when>
           <xsl:otherwise>
             <xsl:element name ="a">
               <xsl:attribute name="href">
                 <xsl:value-of select="/MBooksTop/Paging/NextPage/Href"/>
               </xsl:attribute>
-              Next
+              <xsl:text>Next </xsl:text>
+              <i class="icomoon icomoon-arrow-right" aria-hidden="true"></i>
             </xsl:element>
           </xsl:otherwise>
         </xsl:choose>
@@ -912,6 +922,7 @@
         </div>
         <div class="toolbar alt" role="toolbar">
           <h3 class="offscreen">Tools for collection management</h3>
+          <span class="offscreen" id="selected-items-label">Selected items</span>
           <div class="selectAll"><label>Select all on page <input type="checkbox" id="checkAll"/></label></div>
           <xsl:call-template name="BuildItemSelectActions"/>
         </div>
@@ -1100,22 +1111,31 @@
 
   <xsl:template name="SearchWidget">
     <xsl:param name="label">Search in this collection</xsl:param>
-    <xsl:if test="/MBooksTop/SearchWidget/NumItemsInCollection > 0">
-      <form id="itemlist_searchform" method="get" action="mb" name="searchcoll" class="form-inline">
-        <xsl:call-template name="HiddenDebug"/>
-        <label for="q1"><xsl:value-of select="$label" /></label>
-        <input type="text" size="30" maxlength="150" name="q1" id="q1" class="input-xlarge">
-          <xsl:if test="/MBooksTop/MBooksGlobals/CurrentCgi/Param[@name='a']='listsrch'">
-            <xsl:attribute name="value">
-              <xsl:value-of select="/MBooksTop/QueryString"/>
-            </xsl:attribute>
-          </xsl:if>
-        </input>
-        <input type="hidden" name="a" value="srch"/>
-        <button class="btn" type="submit" name="a" id="srch" value="srch">Find</button>
-        <xsl:copy-of select="$hidden_c_param"/>
-      </form>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="//Param[@name='adm'] = '1'">
+        <div class="alert alert-warning alert-block">
+          <p>You are managing this collection.</p>
+          <p><a href="/cgi/ls?c={//Param[@name='c']};a=srchls;q1=*">Search this collection</a></p>
+        </div>
+      </xsl:when>
+      <xsl:when test="/MBooksTop/SearchWidget/NumItemsInCollection > 0">
+        <form id="itemlist_searchform" method="get" action="mb" name="searchcoll" class="form-inline">
+          <xsl:call-template name="HiddenDebug"/>
+          <label for="q1"><xsl:value-of select="$label" /></label>
+          <input type="text" size="30" maxlength="150" name="q1" id="q1" class="input-xlarge">
+            <xsl:if test="/MBooksTop/MBooksGlobals/CurrentCgi/Param[@name='a']='listsrch'">
+              <xsl:attribute name="value">
+                <xsl:value-of select="/MBooksTop/QueryString"/>
+              </xsl:attribute>
+            </xsl:if>
+          </input>
+          <input type="hidden" name="a" value="srch"/>
+          <button class="btn" type="submit" name="a" id="srch" value="srch">Find</button>
+          <xsl:copy-of select="$hidden_c_param"/>
+        </form>
+      </xsl:when>
+      <xsl:otherwise />
+    </xsl:choose>
   </xsl:template>
 
 
@@ -1154,15 +1174,28 @@
 
     <xsl:variable name="fulltext_class">
       <xsl:choose>
-        <xsl:when test="fulltext=1">fulltext icomoon-document-2</xsl:when>
+        <xsl:when test="fulltext=1">fulltext </xsl:when>
         <xsl:otherwise>
           <xsl:choose>
             <xsl:when test="rights=8"></xsl:when>
-            <xsl:otherwise>viewonly icomoon-locked</xsl:otherwise>
+            <xsl:otherwise>viewonly </xsl:otherwise>
           </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+
+    <xsl:variable name="fulltext_icon_class">
+      <xsl:choose>
+        <xsl:when test="fulltext=1">icomoon icomoon-document-2</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="rights=8"></xsl:when>
+            <xsl:otherwise>icomoon icomoon-locked</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
 
     <xsl:variable name="showing-collections">
       <xsl:choose>
@@ -1212,7 +1245,9 @@
 	    <strong>
 	      <xsl:value-of select="ABLabel"/>
 	         <xsl:text> : </xsl:text>
-	      <xsl:value-of select="ItemID"/>
+		 <xsl:value-of select="ItemID"/>
+	         <xsl:text> : </xsl:text>
+		 <xsl:value-of select="result_number"/>
 	  </strong>
 	  </h4>
 	</xsl:if>
@@ -1315,8 +1350,9 @@
                   <xsl:text>for item </xsl:text><xsl:value-of select="$item-number" />
                 </xsl:attribute>
                 <xsl:attribute name="class">
-                  <xsl:text>cataloglinkhref icomoon-info-circle</xsl:text>
+                  <xsl:text>cataloglinkhref</xsl:text>
                 </xsl:attribute>
+                <i class="icomoon icomoon-info-circle" aria-hidden="true"></i><xsl:text> </xsl:text>
                 <xsl:text>Catalog Record</xsl:text>
               </xsl:element>
             </li>
@@ -1339,6 +1375,7 @@
                 <xsl:attribute name="title">
                   <xsl:text>for item </xsl:text><xsl:value-of select="$item-number" />
                 </xsl:attribute>
+                <i class="icomoon {$fulltext_icon_class}" aria-hidden="true"></i><xsl:text> </xsl:text>
                 <xsl:value-of select="$fulltext_link_string"/>
               </xsl:element>
             </li>
@@ -1358,7 +1395,7 @@
         </div>
         <div class="select">
           <label class="offscreen" for="id{$item-number}">Select item <xsl:value-of select="$item-number" /></label>
-          <input type="checkbox" name="id" class="id" id="id{$item-number}">
+          <input type="checkbox" name="id" class="id" id="id{$item-number}" aria-labelledby="selected-items-label">
             <xsl:attribute name="value">
               <xsl:value-of select="ItemID"/>
             </xsl:attribute>
@@ -1464,8 +1501,9 @@
                   <xsl:text>for item </xsl:text><xsl:value-of select="$item-number" />
                 </xsl:attribute>
                 <xsl:attribute name="class">
-                  <xsl:text>cataloglinkhref icomoon-info-circle</xsl:text>
+                  <xsl:text>cataloglinkhref </xsl:text>
                 </xsl:attribute>
+                <i class="icomoon icomoon-info-circle" aria-hidden="true"></i><xsl:text> </xsl:text>
                 <xsl:text>Catalog Record</xsl:text>
               </xsl:element>
             </li>
