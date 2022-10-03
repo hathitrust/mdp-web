@@ -12,6 +12,7 @@
   xmlns:date="http://exslt.org/dates-and-times"
   xmlns:xlink="https://www.w3.org/1999/xlink"
   xmlns:h="http://www.hathitrust.org"
+  xmlns:svg="http://www.w3.org/2000/svg"
   xmlns="http://www.w3.org/1999/xhtml"
   exclude-result-prefixes="h exsl date"
   extension-element-prefixes="exsl date">
@@ -49,6 +50,9 @@
       </xsl:attribute>
       <xsl:attribute name="data-analytics-enabled"><xsl:call-template name="get-analytics-enabled" /></xsl:attribute>
       <xsl:attribute name="data-tracking-category"><xsl:call-template name="get-tracking-category" /></xsl:attribute>
+      <xsl:if test="//UserHasRoleToggles/@activated != ''">
+        <xsl:attribute name="data-activated"><xsl:value-of select="//UserHasRoleToggles/@activated" /></xsl:attribute>
+      </xsl:if>
       <xsl:call-template name="setup-html-data-attributes" />
       <xsl:attribute name="class">
         <xsl:text>no-js </xsl:text>
@@ -87,15 +91,25 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+        <!-- <style>
+          html[data-activated="ssdproxy"] body {
+            filter: invert(1);
+          }
+
+          html[data-activated="ssdproxy"] a.action-switch-role {
+            filter: invert(1);
+            background: orange;
+          }
+        </style> -->
+
       </head>
 
       <body>
         <xsl:attribute name="class">
           <xsl:call-template name="setup-body-class" />
         </xsl:attribute>
-
-        <h1 class="offscreen"><xsl:call-template name="setup-page-title" /></h1>
-
+        <xsl:call-template name="setup-body-data-attributes" />
+        
         <xsl:call-template name="insert-svg-icons" />
 
         <xsl:call-template name="debug-messages" />
@@ -122,6 +136,7 @@
   </xsl:template>
 
   <xsl:template name="setup-body-tail"></xsl:template>
+  <xsl:template name="setup-body-data-attributes"></xsl:template>
 
   <xsl:template name="skip-to-main-link" />
 
@@ -194,59 +209,130 @@
 
   <xsl:template name="navbar-site-links">
     <ul id="nav" class="nav">
-      <li>
-        <a class="home-link" href="https://www.hathitrust.org">
+      <li class="nav-item">
+        <a class="nav-link home-link" href="https://www.hathitrust.org">
           <span class="offscreen-for-narrowest">Home</span>
         </a>
       </li>
-      <li class="menu nav-links">
-        <a aria-expanded="false" class="menu" href="#" id="burger-menu"><i class="icomoon icomoon-reorder" aria-hidden="true"></i> Menu</a>
-        <ul>
-          <li class="menu">
-            <a href="#" class="menu" aria-expanded="false" aria-haspopup="true" id="about-menu">About <span class="caret" aria-hidden="true"></span></a>
-            <ul role="menu" aria-labelledby="about-menu" aria-hidden="true">
-              <li><a href="https://www.hathitrust.org/about">Welcome to HathiTrust</a></li>
-              <li><a href="https://www.hathitrust.org/partnership">Our Partnership</a></li>
-              <li><a href="https://www.hathitrust.org/digital_library">Our Digital Library</a></li>
-              <li><a href="https://www.hathitrust.org/collaborative-programs">Our Collaborative Programs</a></li>
-              <li><a href="https://www.hathitrust.org/htrc">Our Research Center</a></li>
-              <li><a href="https://www.hathitrust.org/news_publications">News &amp; Publications</a></li>
-            </ul>
+      <li class="nav-item dropdown" id="burger-menu-container">
+        <a id="burger-menu-trigger" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false"><i class="icomoon icomoon-reorder" aria-hidden="true"></i> Menu</a>
+        <ul id="burger-menu" class="dropdown-menu">
+          <li class="fixed">
+            <span class="dropdown-header">About</span>
           </li>
-          <xsl:if test="$gLoggedIn = 'YES'">
-            <li><a href="{//Header/PrivCollLink}">My Collections</a></li>
-          </xsl:if>
-          <li><a href="/cgi/mb">Collections</a></li>
-          <li class="help"><a href="https://www.hathitrust.org/help">Help</a></li>
-          <xsl:call-template name="li-feedback" />
-          <xsl:if test="false() and $gLoggedIn = 'YES'">
-            <li class="on-for-narrowest"><a class="logout-link" href="{//Header/LoginLink}">Log out</a></li>
-          </xsl:if>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/about">Welcome to HathiTrust</a>
+          </li>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/partnership">Our Partnership</a>
+          </li>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/digital_library">Our Digital Library</a>
+          </li>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/collaborative-programs">Our Collaborative Programs</a>
+          </li>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/htrc">Our Research Center</a>
+          </li>
+          <li class="nested">
+            <a class="dropdown-item" href="https://www.hathitrust.org/news_publications">News &amp; Publications</a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <!-- <xsl:if test="$gLoggedIn = 'YES'">
+            <li class=""><a class="dropdown-item" href="{//Header/PrivCollLink}">My Collections</a></li>
+          </xsl:if> -->
+          <li class="">
+            <a class="dropdown-item" href="/cgi/mb">Collections</a>
+          </li>
+          <li class="help">
+            <a class="dropdown-item" href="https://www.hathitrust.org/help">Help</a>
+          </li>
+          <xsl:call-template name="li-feedback">
+            <xsl:with-param name="a-class">dropdown-item</xsl:with-param>
+          </xsl:call-template>
         </ul>
       </li>
+      <li class="nav-item" id="about-menu-container">
+        <a id="about-menu" href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button">About</a>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/about">Welcome to HathiTrust</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/partnership">Our Partnership</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/digital_library">Our Digital Library</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/collaborative-programs">Our Collaborative Programs</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/htrc">Our Research Center</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="https://www.hathitrust.org/news_publications">News &amp; Publications</a>
+          </li>
+        </ul>
+      </li>
+      <!-- <xsl:if test="$gLoggedIn = 'YES'">
+        <li class="nav-item wide"><a class="nav-link" href="{//Header/PrivCollLink}">My Collections</a></li>
+      </xsl:if> -->
+      <li class="nav-item wide">
+        <a class="nav-link" href="/cgi/mb">Collections</a>
+      </li>
+      <li class="nav-item help wide">
+        <a class="nav-link" href="https://www.hathitrust.org/help">Help</a>
+      </li>
+      <xsl:call-template name="li-feedback">
+        <xsl:with-param name="li-class">nav-item wide</xsl:with-param>
+        <xsl:with-param name="a-class">nav-link</xsl:with-param>
+      </xsl:call-template>
     </ul>
   </xsl:template>
 
   <xsl:template name="navbar-user-links">
     <li class="on-for-pt on-for-narrow">
       <button class="btn action-search-hathitrust control-search">
-        <i class="icomoon icomoon-search"></i><span class="off-for-narrowest"> Search</span> HathiTrust</button>
+        <i class="icomoon icomoon-search" aria-hidden="true"></i><span class="offscreen-for-narrowest"> Search</span> HathiTrust</button>
+    </li>
+    <li>
+      <button disabled="disabled" class="btn action-toggle-notifications" aria-label="Toggle Notifications">
+        <i class="icomoon icomoon-bell" aria-hidden="true"></i>
+      </button>
     </li>
     <xsl:choose>
       <xsl:when test="$gLoggedIn = 'YES'">
-        <li class="item-vanishing">
-          <span>
-            <xsl:value-of select="//Header/UserAffiliation" />
-            <!-- ProviderName causes collisions with search navbar -->
-            <!--
-            <xsl:if test="//Header/ProviderName">
-              <xsl:text> (</xsl:text>
-              <xsl:value-of select="//Header/ProviderName" />
-              <xsl:text>)</xsl:text>
-            </xsl:if>
-            -->
-          </span>
-        </li>
+        <xsl:choose>
+          <xsl:when test="//Header/UserHasRoleToggles='TRUE'">
+            <li class="x--off-for-narrowest">
+              <xsl:variable name="debug">
+                <xsl:if test="//Param[@name='debug']">?debug=<xsl:value-of select="//Param[@name='debug']" /></xsl:if>
+              </xsl:variable>
+              <a href="/cgi/ping/switch{$debug}" class="action-switch-role">
+                <xsl:apply-templates select="//Header/UserAffiliation" mode="copy-guts" />
+                <xsl:text> </xsl:text>
+                <xsl:text>⚡</xsl:text>
+              </a>
+            </li>
+          </xsl:when>
+          <xsl:otherwise>
+            <li class="item-vanishing">
+              <span>
+                <xsl:value-of select="//Header/UserAffiliation" />
+                <!-- ProviderName causes collisions with search navbar -->
+                <!--
+                <xsl:if test="//Header/ProviderName">
+                  <xsl:text> (</xsl:text>
+                  <xsl:value-of select="//Header/ProviderName" />
+                  <xsl:text>)</xsl:text>
+                </xsl:if>
+                -->
+              </span>
+            </li>
+          </xsl:otherwise>
+        </xsl:choose>
         <li class="x--off-for-narrowest"><a class="logout-link" href="{//Header/LoginLink}">Log out</a></li>
       </xsl:when>
       <xsl:otherwise>
@@ -410,13 +496,15 @@
   </xsl:template>
 
   <xsl:template name="li-feedback">
+    <xsl:param name="li-class" />
+    <xsl:param name="a-class" />
     <xsl:variable name="feedback-id">
       <xsl:call-template name="get-feedback-id" />
     </xsl:variable>
     <xsl:variable name="feedback-m">
       <xsl:call-template name="get-feedback-m" />
     </xsl:variable>
-    <li><a href="/cgi/feedback?page=form" data-m="{$feedback-m}" data-toggle="feedback tracking-action" data-id="{$feedback-id}" data-tracking-action="Show Feedback">Feedback</a></li>
+    <li class="{$li-class}"><a class="{$a-class}" href="/cgi/feedback?page=form" data-m="{$feedback-m}" data-toggle="feedback tracking-action" data-id="{$feedback-id}" data-tracking-action="Show Feedback">Feedback</a></li>
   </xsl:template>
 
   <xsl:template name="get-feedback-id">HathiTrust (babel)</xsl:template>
@@ -641,6 +729,55 @@
     <xsl:param name="href" />
     <xsl:variable name="modtime" select="//Timestamp[@href=$href]/@modtime" />
     <script type="text/javascript" src="{$href}?_{$modtime}"></script>
+  </xsl:template>
+
+  <xsl:template match="node()" mode="copy-guts">
+    <xsl:apply-templates select="@*|*|text()" mode="copy" />
+  </xsl:template>
+
+  <xsl:template match="svg" mode="copy" priority="101">
+    <xsl:param name="class" />
+    <xsl:copy>
+      <xsl:attribute name="data-animal">seahorse</xsl:attribute>
+      <xsl:apply-templates select="@*" mode="copy">
+        <xsl:with-param name="class" select="$class" />
+      </xsl:apply-templates>
+      <xsl:apply-templates select="*" mode="copy" />
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="svg:svg" mode="copy" priority="100">
+    <xsl:param name="class" />
+    <xsl:copy>
+      <xsl:attribute name="data-animal">zebra</xsl:attribute>
+      <xsl:apply-templates select="@*" mode="copy">
+        <xsl:with-param name="class" select="$class" />
+      </xsl:apply-templates>
+      <xsl:apply-templates select="*" mode="copy" />
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="node()[name()]" mode="copy" priority="10">
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*|*|text()" mode="copy" />
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="@class" mode="copy" priority="100">
+    <xsl:param name="class" />
+    <xsl:attribute name="class">
+      <xsl:value-of select="." />
+      <xsl:if test="normalize-space($class)">
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$class" />
+      </xsl:if>
+    </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="@*|*|text()" mode="copy">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|*|text()" mode="copy" />
+    </xsl:copy>
   </xsl:template>
 
 </xsl:stylesheet>
