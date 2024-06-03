@@ -77,9 +77,9 @@
         
         <xsl:call-template name="debug-messages" />
 
+        <hathi-cookie-consent-banner></hathi-cookie-consent-banner>
         <xsl:call-template name="skip-to-main-link" />
 
-        <hathi-acceptable-use-banner></hathi-acceptable-use-banner>
         <div id="root">
           <xsl:call-template name="build-root-attributes" />
 
@@ -184,6 +184,7 @@
     <hathi-website-header>
       <xsl:call-template name="build-navbar-options" />
     </hathi-website-header>
+    <hathi-alert-banner></hathi-alert-banner>
   </xsl:template>
 
   <xsl:template name="build-navbar-options"></xsl:template>
@@ -225,9 +226,12 @@
     <div class="panel accordion-item">
       <h3 class="accordion-header" id="heading-{$id}">
         <button class="accordion-button fw-bold {$collapsed}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{$id}" aria-controls="collapse-{$id}">
-          <xsl:if test="$open">
-            <xsl:attribute name="aria-expanded">true</xsl:attribute>
-          </xsl:if>
+          <xsl:attribute name="aria-expanded">
+            <xsl:choose>
+              <xsl:when test="$open">true</xsl:when>
+              <xsl:otherwise>false</xsl:otherwise>
+            </xsl:choose>
+          </xsl:attribute>
           <xsl:value-of select="$heading" />
         </button>
       </h3>
